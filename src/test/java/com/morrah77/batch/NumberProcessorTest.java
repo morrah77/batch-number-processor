@@ -7,19 +7,23 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 // TODO generalize processor initialization, add more corner cases
+// TODO after rewriting using streams add a case for long array
 class NumberProcessorTest {
     InputStream inputStream;
     OutputStream outputStream;
-    float[] data;
+    List<Float> data;
     NumberProcessor numberProcessor;
 
     @BeforeEach
     void setUp() {
         inputStream = new ByteArrayInputStream("1;0;-1.5;4000.0\nundo\n-1\n+2\n*5\n%3\nundo\nquit".getBytes());
         outputStream = new ByteArrayOutputStream(1200);
-        data = new float[]{1f, 0f, -1.5f, 4000.0f};
+        data = new ArrayList<Float>(Arrays.asList(1f, 0f, -1.5f, 4000.0f));
         numberProcessor = new NumberProcessor(inputStream, outputStream, data);
     }
 

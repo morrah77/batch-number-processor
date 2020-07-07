@@ -3,11 +3,15 @@ package com.morrah77.batch.arithmetic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 // TODO add corner cases for negatives, partials, large values; consider refactoring tests to parameterized form
 class CalculatorTest {
-    private float[] sourceData;
+    private List<Float> sourceData;
 
     @BeforeEach
     void setup() {
@@ -16,45 +20,48 @@ class CalculatorTest {
 
     @Test
     void BatchAddTest() {
-        float[] expected = {2, 3, 4};
-        Calculator.add(sourceData, 1);
-        assertArrayEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
+        List<Float> expected = new ArrayList<>(Arrays.asList(2f, 3f, 4f));
+        Calculator.add(sourceData, 1f);
+        assertIterableEquals(expected, sourceData, String.format("Add " +
+                "produced unexpected" +
+                " result: " +
+                "%s " +
                 "expected, %s actual", expected, sourceData));
     }
 
     @Test
     void BatchSubtractTest() {
-        float[] expected = {0, 1, 2};
-        Calculator.subtract(sourceData, 1);
-        assertArrayEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
+        List<Float> expected = new ArrayList<>(Arrays.asList(0f, 1f, 2f));
+        Calculator.subtract(sourceData, 1f);
+        assertIterableEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
                 "expected, %s actual", expected, sourceData));
     }
 
     @Test
     void BatchMultiplyTest() {
-        float[] expected = {2, 4, 6};
-        Calculator.multiply(sourceData, 2);
-        assertArrayEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
+        List<Float> expected = new ArrayList<>(Arrays.asList(2f, 4f, 6f));
+        Calculator.multiply(sourceData, 2f);
+        assertIterableEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
                 "expected, %s actual", expected, sourceData));
     }
 
     @Test
     void BatchDivideTest() {
-        float[] expected = {0.5f, 1, 1.5f};
-        Calculator.divide(sourceData, 2);
-        assertArrayEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
+        List<Float> expected = new ArrayList<>(Arrays.asList(.5f, 1f, 1.5f));
+        Calculator.divide(sourceData, 2f);
+        assertIterableEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
                 "expected, %s actual", expected, sourceData));
     }
 
     @Test
     void BatchModTest() {
-        float[] expected = {1, 0, 1};
-        Calculator.mod(sourceData, 2);
-        assertArrayEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
+        List<Float> expected = new ArrayList<>(Arrays.asList(1f, 0f, 1f));
+        Calculator.mod(sourceData, 2f);
+        assertIterableEquals(expected, sourceData, String.format("Add produced unexpected result: %s " +
                 "expected, %s actual", expected, sourceData));
     }
 
     private void initSourceData() {
-        sourceData = new float[]{1, 2, 3};
+        sourceData = new ArrayList<>(Arrays.asList(1f, 2f, 3f));
     }
 }

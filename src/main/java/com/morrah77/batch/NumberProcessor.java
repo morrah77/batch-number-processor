@@ -4,20 +4,25 @@ import com.morrah77.batch.arithmetic.Calculator;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
+// TODO rewrite using streams, ops chain
 public class NumberProcessor {
-    public static final String PROC_COMMAND_QUIT="quit";
-    public static final String PROC_COMMAND_UNDO="undo";
+    public static final String PROC_COMMAND_QUIT = "quit";
+    public static final String PROC_COMMAND_UNDO = "undo";
+    public static final String PROC_COMMAND_HIST = "hist";
 
     private InputStream inputStream;
     private OutputStream outputStream;
-    private float[] data;
-    Stack<float[]> dataStack;
+    private List<Float> data;
+    Stack<List<Float>> dataStack;
     private boolean isStarted = false;
 
-    public NumberProcessor(InputStream inputStream, OutputStream outputStream, float[] data) {
+    public NumberProcessor(InputStream inputStream, OutputStream outputStream, List<Float> data) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
         this.data = data;
@@ -51,6 +56,9 @@ public class NumberProcessor {
             case PROC_COMMAND_UNDO:
                 executeUndoCommand(command);
                 break;
+            case PROC_COMMAND_HIST:
+                executeHistoryCommand();
+                break;
             default:
                 executeCalculatorCommand(command);
         }
@@ -69,9 +77,20 @@ public class NumberProcessor {
         outputData();
     }
 
+    private void executeHistoryCommand() {
+        dataStack.forEach((arg) -> {
+            try {
+                outputList(arg);
+            } catch (IOException e) {
+
+            }
+
+        });
+    }
+
     private void executeCalculatorCommand(Command command) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         saveStatus();
-        Calculator.class.getMethod(command.name, float[].class, float.class).invoke(Calculator.class,
+        Calculator.class.getMethod(command.name, List.class, Float.class).invoke(Calculator.class,
                 data, command.value);
         outputData();
     }
@@ -81,7 +100,7 @@ public class NumberProcessor {
     }
 
     private void saveStatus() {
-        dataStack.push(data.clone());
+        dataStack.push(new ArrayList<>(data));
     }
 
     // TODO consider command enum creation
@@ -89,8 +108,8 @@ public class NumberProcessor {
         if (input.length() <= 1) {
             throw new RuntimeException("Invalid input");
         }
-        if (input.equals(PROC_COMMAND_QUIT) || input.equals(PROC_COMMAND_UNDO)) {
-            return new Command(input, 0);
+        if (input.equals(PROC_COMMAND_QUIT) || input.equals(PROC_COMMAND_UNDO) || input.equals(PROC_COMMAND_HIST)) {
+            return new Command(input, 0f);
         }
         switch (input.charAt(0)) {
             case '+':
@@ -104,20 +123,24 @@ public class NumberProcessor {
         }
     }
 
-    // TODO improve it!
     private void outputData() throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
+        outputList(data);
+    }
+
+    private void outputList(List<Float> arr) throws IOException {
         String formatForPartial = "%s";
         String formatForWhole = "%d";
-        for (float sourceDatum : data) {
-            if (sourceDatum == (long)sourceDatum) {
-                stringBuilder.append(String.format(formatForWhole, (long)sourceDatum));
-            } else {
-                stringBuilder.append(String.format(formatForPartial, sourceDatum));
-            }
-            stringBuilder.append(';');
-        }
-        output(stringBuilder.toString());
+        String result = arr
+                .stream()
+                .map(sourceDatum -> {
+                    if (sourceDatum == (long) sourceDatum.floatValue()) {
+                        return String.format(formatForWhole, (long) sourceDatum.floatValue());
+                    } else {
+                        return String.format(formatForPartial, sourceDatum);
+                    }
+                })
+                .collect(Collectors.joining(";"));
+        output(result);
     }
 
     private void output(String value) throws IOException {

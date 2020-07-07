@@ -4,7 +4,7 @@ package com.morrah77.batch;
 class Command {
     String name;
     float value;
-    Command(String name, float value) {
+    Command(String name, Float value) {
         this.name = name;
         this.value = value;
     }

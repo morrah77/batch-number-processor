@@ -2,9 +2,11 @@ package com.morrah77.batch;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 class Application {
-    static float[] sourceData;
+    static List<Float> sourceData;
     static NumberProcessor numberProcessor;
 
     public static void main(String[]args){
@@ -29,7 +31,7 @@ class Application {
 
     private static void checkAndParseArguments(String[]args) throws RuntimeException {
         checkArgumentLength(args);
-        sourceData = parseNumberArray(args[0]);
+        sourceData = parseNumberList(args[0]);
     }
 
     private static void checkArgumentLength(String[]args) {
@@ -38,12 +40,12 @@ class Application {
         }
     }
 
-    private static float[] parseNumberArray(String arg) throws NumberFormatException {
-        float[] result;
+    private static List<Float> parseNumberList(String arg) throws NumberFormatException {
+        List<Float> result;
         String[] parts = arg.split(";");
-        result = new float[parts.length];
+        result = new ArrayList<>();
         for (int i = 0; i < parts.length; i++) {
-            result[i] = Float.parseFloat(parts[i]);
+            result.add(Float.parseFloat(parts[i]));
         }
         return result;
     }
